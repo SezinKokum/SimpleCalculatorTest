@@ -68,7 +68,7 @@ public class CalculatorTest {
         WebElement buttonEqual = driver.findElement(By.cssSelector("button[name = '=']"));
         WebElement resultDisplay = driver.findElement(By.cssSelector(".answer-field"));
 
-        // Perform the addition operation
+        // Perform the division operation
         clickNumber(number1);
         buttonDivision.click();
         clickNumber(number2);
