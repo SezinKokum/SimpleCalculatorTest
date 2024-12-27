@@ -9,46 +9,87 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Random;
+
 public class CalculatorTest {
 
     WebDriver driver;
 
     @BeforeMethod
     public void setUp() {
-        // Set up WebDriverManager to automatically manage ChromeDriver
+        // Set up WebDriverManager
         WebDriverManager.chromedriver().driverVersion("131").setup();
 
         // Initialize ChromeDriver
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless"); // Optional: Runs tests in headless mode (no UI)
+        options.addArguments("--headless");
         driver = new ChromeDriver(options);
 
-        // Navigate to the app (ensure the app is running at localhost:3000)
         driver.get("http://localhost:3000");
     }
 
     @Test
-    public void testAddition() {
-        // Find the input elements for the calculator (use proper selectors)
-        WebElement button1 = driver.findElement(By.cssSelector("button[name = '1']"));
+    public void testAdditionDynamic() {
+        System.out.println("Inside testAdditionDynamic");
+        Random random = new Random();
+        int number1 = random.nextInt(100);
+        int number2 = random.nextInt(100);
+        System.out.println("number1: " + number1);
+        System.out.println("number2: " + number2);
+
         WebElement buttonAdd = driver.findElement(By.cssSelector("button[name = '+']"));
-        WebElement button2 = driver.findElement(By.cssSelector("button[name = '2']"));
         WebElement buttonEqual = driver.findElement(By.cssSelector("button[name = '=']"));
         WebElement resultDisplay = driver.findElement(By.cssSelector(".answer-field"));
 
-        // Perform the addition operation: 1 + 2 = 3
-        button1.click();
+        // Perform the addition operation
+        clickNumber(number1);
         buttonAdd.click();
-        button2.click();
+        clickNumber(number2);
         buttonEqual.click();
 
-        // Get the result and verify it
+        // Get the result and verify the assertion
         String result = resultDisplay.getText();
         System.out.println("Result: " + result);
-        Assert.assertEquals(result, "3", "The result of 1 + 2 should be 3");
+        String total = String.valueOf(number1 + number2);
+        Assert.assertEquals(result, total, "The result should be " + total);
     }
 
-    // Additional test cases can be written here
+    @Test
+    public void testDivisionByZero() {
+        System.out.println("Inside testDivisionByZero");
+
+        Random random = new Random();
+        int number1 = random.nextInt(100);
+        int number2 = 0;
+        System.out.println("number1: " + number1);
+        System.out.println("number2: " + number2);
+
+        WebElement buttonDivision = driver.findElement(By.cssSelector("button[name = '/']"));
+        WebElement buttonEqual = driver.findElement(By.cssSelector("button[name = '=']"));
+        WebElement resultDisplay = driver.findElement(By.cssSelector(".answer-field"));
+
+        // Perform the addition operation
+        clickNumber(number1);
+        buttonDivision.click();
+        clickNumber(number2);
+        buttonEqual.click();
+
+        // Get the result and verify the assertion
+        String result = resultDisplay.getText();
+        System.out.println("Result: " + result);
+        Assert.assertEquals(result, "Infinity", "Can not be divisible by zero");
+    }
+
+    // Helper method to click a number dynamically
+    private void clickNumber(int number) {
+
+        String numStr = String.valueOf(number);
+
+        for (char digit : numStr.toCharArray()) {
+            WebElement digitButton = driver.findElement(By.cssSelector("button[name = '" + digit + "']"));
+            digitButton.click();
+        }
+    }
 
     // After the tests are complete, close the browser
     @AfterMethod
